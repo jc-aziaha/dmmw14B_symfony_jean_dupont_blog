@@ -42,12 +42,17 @@
                     <img src="{{ asset('images/visitor/authentication/Connectez-vous-pour-lire-des-articles-sur-la-sante.png') }}" class="img-fluid" alt="Connectez vous pour lire des articles sur la santé" >
                 </div>
                 <div class="col-lg-6 d-flex flex-column justify-content-center align-items-center">
-
-                    {% if error %}
-                        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-                    {% endif %}
-
                     <form method="POST" class="w-100">
+                        {% if error %}
+                            <div class="text-center alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                        {% endif %}
+
+                        {% for message in app.flashes('success') %}
+                            <div class="alert alert-success text-center" role="alert">
+                                {{message}}
+                            </div>
+                        {% endfor %}
+                        
                         <div class="mb-3">
                             <label for="authentication_form_email">Email</label>
                             <input type="email" value="{{ last_username }}" name="email" id="authentication_form_email" class="form-control" autocomplete="email" required autofocus>
@@ -55,6 +60,17 @@
                         <div class="mb-3">
                             <label for="authentication_form_password">Mot de passe</label>
                             <input type="password" name="password" id="authentication_form_password" class="form-control" autocomplete="current-password" required>
+                        </div>
+                        <div class="row my-3">
+                            <div class="col-md-6">
+                                <label>
+                                    <input type="checkbox" name="_remember_me" checked>
+                                    Se souvenir de moi
+                                </label>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <a href="{{path('visitor.authentication.forgot_password_request')}}">Mot de passe oublié ?</a>
+                            </div>
                         </div>
                             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" >
                         <div class="mb-3">
