@@ -3,18 +3,19 @@ namespace App\Controller\Visitor\Registration;
 
 
 use App\Entity\User;
+use DateTimeImmutable;
+use App\Security\EmailVerifier;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
-use App\Security\EmailVerifier;
+use Symfony\Component\Mime\Address;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mime\Address;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
@@ -78,7 +79,12 @@ class RegistrationController extends AbstractController
 
 
     #[Route('/verify/email', name: 'visitor.registration.email_verification')]
-    public function verifyUserEmail(Request $request, TranslatorInterface $translator, UserRepository $userRepository): Response
+    public function verifyUserEmail(
+        Request $request, 
+        TranslatorInterface $translator, 
+        UserRepository $userRepository,
+        EntityManagerInterface $em
+    ): Response
     {
         $id = $request->query->get('id');
 
@@ -98,7 +104,10 @@ class RegistrationController extends AbstractController
         try 
         {
             $this->emailVerifier->handleEmailConfirmation($request, $user);
-        } 
+            $user->setVerifiedAt(new DateTimeImmutable('now'));
+            $em->persist($user);
+            $em->flush();
+        }
         catch (VerifyEmailExceptionInterface $exception) 
         {
             $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
