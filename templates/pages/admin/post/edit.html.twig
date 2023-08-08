@@ -1,8 +1,8 @@
 {% extends "themes/base_admin.html.twig" %}
 
-{% block title %}Le blog de Jean Dupont - Admin - Nouvel article{% endblock %}
+{% block title %}Le blog de Jean Dupont - Admin - Modifier cet article{% endblock %}
 
-{% block description %}Le blog de Jean Dupont - Admin - Nouvel article{% endblock %}
+{% block description %}Le blog de Jean Dupont - Admin - Modifier cet article{% endblock %}
 
 {% block tinyMCE %}
     <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block main %}
-    <h1 class="text-center my-3 display-5">Nouvel article</h1>
+    <h1 class="text-center my-3 display-5">Modifier cet article</h1>
 
     <div class="container">
         <div class="row">
@@ -30,10 +30,19 @@
                         <div class="text-danger">{{form_errors(form.category)}}</div>
                         {{form_widget(form.category, {'attr': {'class': 'form-control'}})}}
                     </div>
-                    <div class="mb-3">
-                        <label for="">Image</label>
-                        <div class="text-danger">{{form_errors(form.imageFile)}}</div>
-                        {{form_widget(form.imageFile, {'attr': {'class': 'form-control'}})}}
+                    <div class="row mb-3">
+                        <div class="col-md-6 text-center">
+                            {% if post.image %}
+                                <img src="{{ vich_uploader_asset(post, 'imageFile') | imagine_filter('admin_post_thumbnail') }}" alt="{{ post.title }}">
+                            {% else %}
+                                <p>---</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Image</label>
+                            <div class="text-danger">{{form_errors(form.imageFile)}}</div>
+                            {{form_widget(form.imageFile, {'attr': {'class': 'form-control mt-1 mb-3'}})}}
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="">Contenu</label>
@@ -41,7 +50,7 @@
                         {{form_widget(form.content, {'attr': {'class': 'form-control', 'rows': 10}})}}
                     </div>
                     <div class="mb-3">
-                        <input formnovalidate type="submit" class="btn btn-primary shadow" value="Sauvegarder">
+                        <input formnovalidate type="submit" class="btn btn-primary shadow" value="Modifier et sauvegarder">
                     </div>
                 {{ form_end(form) }}
             </div>
