@@ -2,15 +2,16 @@
 
 namespace App\Form;
 
+use App\Entity\Tag;
 use App\Entity\Post;
 use App\Entity\Category;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Vich\UploaderBundle\Form\Type\VichImageType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 class PostFormType extends AbstractType
 {
@@ -26,6 +27,14 @@ class PostFormType extends AbstractType
             
                 // uses the User.username property as the visible option string
                 'choice_label' => 'name',
+            ])
+            ->add('tags', EntityType::class, [
+                // looks for choices from this entity
+                'class' => Tag::class,
+
+                'choice_label' => 'name',
+
+                'multiple' => true,
             ])
             ->add('imageFile', VichImageType::class, [
                 'required' => false,

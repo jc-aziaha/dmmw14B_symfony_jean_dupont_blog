@@ -2,20 +2,21 @@
 
 namespace App\Entity;
 
-use App\Repository\CategoryRepository;
+use App\Repository\TagRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 
-
-#[UniqueEntity('name', message: "Cette catégorie existe déjà. Veuillez en choisir une autre.")]
-#[ORM\Entity(repositoryClass: CategoryRepository::class)]
-class Category
+#[UniqueEntity('name', message: "Ce tag existe déjà.")]
+#[ORM\Entity(repositoryClass: TagRepository::class)]
+class Tag
 {
+
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -25,12 +26,12 @@ class Category
     #[Assert\NotBlank(message: "Le nom est obligatoire.")]
     #[Assert\Length(
         max: 255,
-        maxMessage: 'Le nom doit contenir au maximum {{ limit }} caractères.',
+        maxMessage: 'Le nom du tag ne doit pas dépasser {{ limit }} caractères.',
     )]
     #[Assert\Regex(
-        pattern: "/^[0-9a-zA-Z\-\_\'\ áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ]+$/i",
+        pattern: "/^[0-9a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ]+$/i",
         match: true,
-        message: 'Le nom doit contenir uniquement des lettres, des chiffres le tiret du milieu de l\'undescore.',
+        message: 'Le nom doit contenir uniquement des lettres et des chiffres',
     )]
     #[ORM\Column(length: 255, unique: true)]
     private ?string $name = null;
@@ -50,13 +51,14 @@ class Category
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\OneToMany(mappedBy: 'category', targetEntity: Post::class, orphanRemoval: true)]
+    #[ORM\ManyToMany(targetEntity: Post::class, mappedBy: 'tags')]
     private Collection $posts;
 
     public function __construct()
     {
         $this->posts = new ArrayCollection();
     }
+
 
 
     public function getId(): ?int
@@ -81,14 +83,35 @@ class Category
         return $this->slug;
     }
 
+    public function setSlug(string $slug): static
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
+    public function setCreatedAt(?\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
     }
 
     /**
@@ -103,7 +126,7 @@ class Category
     {
         if (!$this->posts->contains($post)) {
             $this->posts->add($post);
-            $post->setCategory($this);
+            $post->addTag($this);
         }
 
         return $this;
@@ -112,10 +135,7 @@ class Category
     public function removePost(Post $post): static
     {
         if ($this->posts->removeElement($post)) {
-            // set the owning side to null (unless already changed)
-            if ($post->getCategory() === $this) {
-                $post->setCategory(null);
-            }
+            $post->removeTag($this);
         }
 
         return $this;

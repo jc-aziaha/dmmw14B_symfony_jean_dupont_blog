@@ -44,6 +44,7 @@
                     <th>Id</th>
                     <th>Image</th>
                     <th>Catégorie</th>
+                    <th>Tags</th>
                     <th>Titre</th>
                     <th>Publié ?</th>
                     <th>Contenu</th>
@@ -62,6 +63,11 @@
                             {% endif %}
                         </td>
                         <td>{{post.category.name}}</td>
+                        <td>
+                            {% for tag in post.tags %}
+                                <span class="badge text-bg-primary">{{tag.name}}</span>
+                            {% endfor %}
+                        </td>
                         <td>{{post.title}}</td>
                         <td>
                             {% if post.isPublished %}
