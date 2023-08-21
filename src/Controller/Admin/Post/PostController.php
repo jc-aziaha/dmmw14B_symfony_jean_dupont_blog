@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class PostController extends AbstractController
 {
@@ -183,4 +184,40 @@ class PostController extends AbstractController
         return $this->redirectToRoute('admin.post.index');
     }
 
+
+    #[Route('/admin/post/multiple-posts-delete', name: 'admin.post.multiple_delete', methods: ['DELETE'])]
+    public function multipleDelete(
+        Request $request,
+        PostRepository $postRepository,
+        EntityManagerInterface $em
+    ) : Response
+    {
+        $csrfTokenValue = $request->request->get('csrf_token');
+        $ids = $request->request->get('ids');
+
+        $ids = explode(",", $ids);
+
+        if ( $this->isCsrfTokenValid("multiple_delete_posts_token_key", $csrfTokenValue) ) 
+        {
+            foreach ($ids as $id)
+            {
+                $post = $postRepository->findOneBy(['id' => $id]);
+
+                $em->remove($post);
+                $em->flush();
+            }
+
+            return $this->json(['status' => true, "message" => "La suppression multiple a été effectuée avec succès."]);            
+        }
+
+        return $this->json(
+            ['status'=> false, "message" => "Un problème est survenu, veuillez réessayer."],
+            403
+        );
+
+        // return new JsonResponse();
+
+
+
+    }
 }
