@@ -4,6 +4,7 @@
 
 {% block main %}
     <main>
+
         <header>
             <div class="container mt-5 text-center">
                 <div class="row">
@@ -54,5 +55,31 @@
                 </div>
             </div>
         </section>
+
+        {% if posts is not empty %}
+            <section class="my-3 py-3">
+                <h1 class="text-center my-3 display-5">Mes derniers articles</h1>
+
+                <div class="container mt-5">
+                    <div class="card-group">
+                        {% for post in posts %}
+                            <div class="card mx-3 border shadow">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{post.title}}</h5>
+                                    <p class="card-text">{{post.content|striptags|u.truncate(70, '...')|raw}}</p>
+                                    <p><a href="#" class="btn btn-sm btn-primary">Lire cet article</a></p>
+                                    <p class="card-text"><small class="text-body-secondary">Publié {{post.publishedAt|ago}}</small></p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+
+        <section class="my-3 py-5 bg-light text-center">
+            <a href="#" class="btn btn-lg btn-primary">Contactez-moi</a>
+        </section>
+        
     </main>
 {% endblock %}

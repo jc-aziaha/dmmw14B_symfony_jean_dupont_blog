@@ -21,6 +21,16 @@
             </ul>
             <ul class="navbar-nav ms-auto">
                 {% if app.user %}
+                    {% if "ROLE_ADMIN" in app.user.roles %}
+                        <li class="nav-item">
+                            <a class="my-2 my-lg-0 mx-lg-2 btn btn-outline-primary shadow" href="{{path('admin.home.dashboard')}}">Espace admin</a>
+                        </li>
+                    {% endif %}
+                    {% if "ROLE_USER" in app.user.roles %}
+                        <li class="nav-item">
+                            <a class="my-2 my-lg-0 mx-lg-2 btn btn-outline-primary shadow" href="">Espace privé</a>
+                        </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a class="my-2 my-lg-0 mx-lg-2 btn btn-outline-primary shadow" href="{{path('app.logout')}}">Déconnexion</a>
                     </li>
