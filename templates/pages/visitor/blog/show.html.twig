@@ -11,6 +11,54 @@
                     <li class="breadcrumb-item active" aria-current="page">{{post.title|u.truncate('50', '...')}}</li>
                 </ol>
             </nav>
+
+            <div class="text-center my-3">
+                <h1 class="my-3 display-5">{{post.title}}</h1>
+                <p><small>Publié {{post.publishedAt|ago}} par Jean Dupont</small></p>
+            </div>
+
+            <div class="text-center my-3">
+                {% if post.image %}
+                    <img src="{{vich_uploader_asset(post, 'imageFile')}}" class="img-fluid" alt="{{post.title}}" >
+                {% endif %}
+            </div>
+
+            <article class="my-3">
+                {{post.content|raw}}
+            </article>
+
+            {% if app.user %}
+                <div class="my-3" id="create-comment-box">
+                    {{form_start(form, {'action': path('visitor.blog.post.show', {'id':post.id, 'slug':post.slug})~"#create-comment-box" })}}
+                        <div class="mb-3">
+                            <div class="text-danger">{{form_errors(form.content) }}</div>
+                            {{form_widget(form.content, {'attr': {'class':'form-control', 'placeholder': 'Laissez un commentaire...', 'rows': 4}}) }}
+                        </div>
+                        <div>
+                            <input formnovalidate type="submit" class="btn btn-primary" value="Commentez">
+                        </div>
+                    {{form_end(form)}}
+                </div>
+            {% else %}
+                <div class="text-center">
+                    <p>Veuillez vous connecter pour laisser un commentaire.<br>
+                    <a href="{{path('visitor.authentication.login')}}" class="btn btn-outline-primary">Se connecter</a> 
+                    <a href="{{path('visitor.registration.register')}}" class="btn btn-primary">S'inscrire</a></p>
+                </div>
+            {% endif %}
+            
+
+            <div class="my-5">
+                {% for comment in post.comments|reverse %}
+                    <div class="m-3 p-2 border shadow">
+                        <p><strong>{{comment.user.firstName}} {{comment.user.lastName}}</strong> {{ 'ROLE_SUPER_ADMIN' in comment.user.roles ? '<span class="badge text-bg-success">Auteur</span>' : ''}} <small>({{comment.createdAt|ago}})</small></p>
+                        <p>{{comment.content|nl2br}}</p>
+                    </div>
+                    <hr>
+                {% endfor %}
+            </div>
+
+            
         </div>
     </main>
 {% endblock %}
