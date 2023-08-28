@@ -7,6 +7,13 @@
 {% block main %}
     <h1 class="my-3 display-5 text-center">Liste des utilisateurs</h1>
 
+    {% for message in app.flashes('success') %}
+        <div class="text-center alert alert-success alert-dismissible fade show" role="alert">
+            {{message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
     <div class="table-responsive">
         <table id="table" class="table table-striped table-bordered table-hover">
             <thead class="table-dark">
@@ -52,8 +59,16 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a title="Modifier rôle" href=""><i class="fa-solid fa-pen-to-square"></i></a>
-                            <a title="Supprimer l'utilisateur" href=""><i class="fa-solid fa-trash-can"></i></a>
+                            {% if "ROLE_SUPER_ADMIN" not in user.roles %}
+                            {% if user.isVerified %}
+                                <a class="text-secondary m-2" title="Modifier rôle" href="{{path('admin.user.edit_roles', {'id':user.id})}}"><i class="fa-solid fa-pen-to-square"></i></a>
+                            {% endif %}
+                            <a onclick="event.preventDefault(); confirm('Confirmer la supression du compte ?') && document.querySelector('#delete-user-{{user.id}}').submit();" class="text-danger m-2" title="Supprimer l'utilisateur" href="#"><i class="fa-solid fa-trash-can"></i></a>
+                            <form action="{{path('admin.user.delete', {'id':user.id})}}" method="POST" id="delete-user-{{user.id}}">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <input type="hidden" name="csrf_token" value="{{csrf_token('delete_user_'~user.id)}}">
+                            </form>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
