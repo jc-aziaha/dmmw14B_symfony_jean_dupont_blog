@@ -19,6 +19,9 @@
         {# Font awesome #}
         {% block fontAwesome %}{% endblock %}
 
+        {# No SEO for user area #}
+        <meta name="robots" content="noindex, nofollow">
+
         {# Font family #}
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,13 +43,13 @@
     <body class="jd-body">
 
         {# Navbar #}
-        {% include "layouts/navbar/navbar_visitor.html.twig" %}
+        {% include "layouts/navbar/navbar_user.html.twig" %}
 
         {# The specific content for each page #}
         {% block main %}{% endblock %}
 
         {# Footer #}
-        {% include "layouts/footer/footer_visitor.html.twig" %} 
+        {% include "layouts/footer/footer_user.html.twig" %}
 
     </body>
 </html>

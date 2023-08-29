@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\SettingRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: SettingRepository::class)]
@@ -15,9 +16,24 @@ class Setting
     #[ORM\Column]
     private ?int $id = null;
 
+
+    #[Assert\NotBlank(message: "L'email est obligatoire.")]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'L\'email doit contenir au maximum {{ limit }} caractères.',
+    )]
+    #[Assert\Email(
+        message: 'L\'email {{ value }} n\'est pas valide.',
+    )]
     #[ORM\Column(length: 255)]
     private ?string $email = null;
 
+
+    #[Assert\Regex(
+        pattern: "/^[0-9\-\+\s\(\)]{6,30}$/",
+        match: true,
+        message: 'Le numéro de téléphone n\'est pas valide.'
+    )]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $phone = null;
 
@@ -39,7 +55,7 @@ class Setting
         return $this->email;
     }
 
-    public function setEmail(string $email): static
+    public function setEmail(?string $email): static
     {
         $this->email = $email;
 

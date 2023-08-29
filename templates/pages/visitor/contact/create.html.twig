@@ -65,8 +65,10 @@
                 </div>
                 <div class="col-md-6 d-flex flex-column justify-content-center align-items-center">
                     <div>
-                        <p><i class="fa-solid fa-envelope"></i> : medecine-du-monde@gmail.com</p>
-                        <p><i class="fa-solid fa-phone"></i> : 06 05 05 05 05</p>
+                        <p><i class="fa-solid fa-envelope"></i> : {{setting.email}}</p>
+                        {% if setting.phone %}
+                            <p><i class="fa-solid fa-phone"></i> : {{setting.phone}}</p>
+                        {% endif %}
                     </div>
                     <div>
                         <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d10498.075182420007!2d2.783593!3d48.8673858!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e61d19ca7ae2bd%3A0x57faf8cb6310e660!2sDisneyland%20Paris!5e0!3m2!1sfr!2sfr!4v1692866039763!5m2!1sfr!2sfr" class="w-100 h-100" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
