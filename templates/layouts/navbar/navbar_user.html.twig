@@ -9,17 +9,17 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
                     <a 
-                        class="nav-link {{pathInfo == path('visitor.welcome.index') ? 'jd-active' : '' }}" 
-                        {{pathInfo == path('visitor.welcome.index') ? 'aria-current="page"' : '' }} 
-                        href="{{path('visitor.welcome.index')}}">
+                        class="nav-link {{pathInfo == path('user.home.index') ? 'active' : '' }}" 
+                        {{pathInfo == path('user.home.index') ? 'aria-current="page"' : '' }} 
+                        href="{{path('user.home.index')}}">
                         Espace
                     </a>
                 </li>
                 <li>
                     <a 
-                        class="nav-link {{pathInfo == path('visitor.welcome.index') ? 'jd-active' : '' }}" 
-                        {{pathInfo == path('visitor.welcome.index') ? 'aria-current="page"' : '' }} 
-                        href="{{path('visitor.welcome.index')}}">
+                        class="nav-link {{pathInfo == path('user.profile.index') ? 'active' : '' }}" 
+                        {{pathInfo == path('user.profile.index') ? 'aria-current="page"' : '' }} 
+                        href="{{path('user.profile.index')}}">
                         Mon profil
                     </a>
                 </li>
