@@ -136,45 +136,45 @@ class BlogController extends AbstractController
         }
 
 
-        #[Route('/blog/post/{id<\d+>}/{slug}/like', name: 'visitor.blog.post.like', methods: ['GET'])]
-        public function like(
-            Post $post, 
-            PostLikeRepository $postLikeRepository,
-            EntityManagerInterface $em
-        ) : Response
-        {
-            $user = $this->getUser();
+        // #[Route('/blog/post/{id<\d+>}/{slug}/like', name: 'visitor.blog.post.like', methods: ['GET'])]
+        // public function like(
+        //     Post $post, 
+        //     PostLikeRepository $postLikeRepository,
+        //     EntityManagerInterface $em
+        // ) : Response
+        // {
+        //     $user = $this->getUser();
     
-            if (!$user) 
-            {
-                return $this->json(array('code' => 403, 'message' => 'Unautorized'), 403);
-            }
+        //     if (!$user) 
+        //     {
+        //         return $this->json(array('code' => 403, 'message' => 'Unautorized'), 403);
+        //     }
     
-            if ( $post->isLikedByUser($user) ) 
-            {
-                $post_liked = $postLikeRepository->findOneBy(array('post' => $post, 'user' => $user));
+        //     if ( $post->isLikedByUser($user) ) 
+        //     {
+        //         $post_liked = $postLikeRepository->findOneBy(array('post' => $post, 'user' => $user));
     
-                $em->remove($post_liked);
-                $em->flush();
+        //         $em->remove($post_liked);
+        //         $em->flush();
                 
-                return $this->json(array(
-                    'code' => 200, 
-                    'message' => 'Like supprimé',
-                    'postLikes' => $postLikeRepository->count(array('post' => $post))
-                ), 200);
-            }
+        //         return $this->json(array(
+        //             'code' => 200, 
+        //             'message' => 'Like supprimé',
+        //             'postLikes' => $postLikeRepository->count(array('post' => $post))
+        //         ), 200);
+        //     }
     
-            $postLike = new PostLike();
-            $postLike->setPost($post);
-            $postLike->setUser($user);
+        //     $postLike = new PostLike();
+        //     $postLike->setPost($post);
+        //     $postLike->setUser($user);
     
-            $em->persist($postLike);
-            $em->flush();
+        //     $em->persist($postLike);
+        //     $em->flush();
     
-            return $this->json(array(
-                'code' => 200, 
-                'message' => 'Like bien ajouté',
-                'postLikes' => $postLikeRepository->count(array('post' => $post))
-            ), 200);
-        }
+        //     return $this->json(array(
+        //         'code' => 200, 
+        //         'message' => 'Like bien ajouté',
+        //         'postLikes' => $postLikeRepository->count(array('post' => $post))
+        //     ), 200);
+        // }
     }
