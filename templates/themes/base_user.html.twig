@@ -48,7 +48,9 @@
         {% include "layouts/navbar/navbar_user.html.twig" %}
 
         {# The specific content for each page #}
-        {% block main %}{% endblock %}
+        <main class="container-fluid my-3">
+            {% block main %}{% endblock %}
+        </main>
 
         {# Footer #}
         {% include "layouts/footer/footer_user.html.twig" %}
