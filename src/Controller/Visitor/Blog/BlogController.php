@@ -4,6 +4,7 @@ namespace App\Controller\Visitor\Blog;
 
 use App\Entity\Post;
 use App\Entity\Comment;
+use App\Entity\Category;
 use App\Form\CommentFormType;
 use App\Repository\TagRepository;
 use App\Repository\PostRepository;
@@ -66,6 +67,13 @@ class BlogController extends AbstractController
             "post" => $post,
             "form" => $form->createView()
         ]);
+    }
+
+
+    #[Route('/blog/posts/filter-by-category/{slug}', name: 'visitor.blog.posts.filter_by_category', methods:['GET'])]
+    public function filterByCategory(Category $category) : Response
+    {
+        dd($category);
     }
 
 }
