@@ -30,13 +30,14 @@
             <article class="my-3">
                 {{post.content|raw}}
 
-                <a class="js-like-link" href="{{ path('visitor.blog.post.like', {'id': post.id, 'slug': post.slug}) }}">
-                    {% if app.user and post.isLikedByUser(app.user) %}
-                        <i class="fa-solid fa-thumbs-up"></i>  {# Pouce liké #}
+                <a id="like-link" href="{{path('visitor.blog.post.like', {'id':post.id, 'slug':post.slug})}}">
+                    {% if app.user and post.isLikedBy(app.user) %}
+                        <i class="fa-solid fa-thumbs-up"></i> {# Pouce liké #}
                     {% else %}
                         <i class="fa-regular fa-thumbs-up"></i> {# Pouce non liké #}
                     {% endif %}
-                    <span class="js-likes-length">{{ post.postLikes|length }}</span>
+                    
+                    <span id="total-likes-container">{{post.postLikes|length}}</span>
                     <span>J'aime</span>
                 </a>
             </article>
@@ -61,7 +62,6 @@
                 </div>
             {% endif %}
             
-
             <div class="my-5">
                 {% set count = 0 %}
                 {% if post.comments is not empty %}
@@ -87,48 +87,37 @@
                     
                 {% endif %}
                 
-            </div>
-
-            
+            </div>    
         </div>
     </main>
 {% endblock %}
 
 {% block javascript %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
-
         $(document).ready(function(){
-            $(".js-like-link").on("click", function(event) {
-
+            $('#like-link').on('click', function(event){
                 event.preventDefault();
 
                 $.ajax({
                     url: this.href,
-                    type: "GET",
-                    success: function (response) {
-                        
-                        $(".js-likes-length").html(response.postLikes);
+                    type: 'GET',
+                    success: function(response){
+                        $('#total-likes-container').html(response.totalLikes);
 
-                        if($('i').hasClass('fa-regular'))
-                        {
+                        if ($('i').hasClass('fa-regular')) {
                             $('i').removeClass('fa-regular');
                             $('i').addClass('fa-solid');
-                        }
-                        else
-                        {
+                        } else {
                             $('i').removeClass('fa-solid');
                             $('i').addClass('fa-regular');
                         }
                     },
-                    error: function (error) {
-                        if(error.response.status === 403)
-                        {
-                            alert('Vous ne pouvez pas aimer cet article sans être connecté!');
-                        }
-                        else
-                        {
-                            alert("Une erreur s'est produite, veuillez réessayer plus tard");
+                    error: function(response){
+                        if (response.status == 403) {
+                            alert(response.responseJSON.message);
+                        } else {
+                            alert("Une erreur est survenue. Veuillez réessayer plus tard.");
                         }
                     }
                 });

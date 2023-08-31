@@ -343,4 +343,24 @@ class Post
 
         return $this;
     }
+
+    public function isLikedBy(User $user) : bool
+    {
+        // Récupérons tous les likes associés à cet article
+        $likes = $this->getPostLikes()->toArray();
+
+        // Parcourons le tableau des likes,
+        foreach ($likes as $like) 
+        {
+            // Si l'utilisateur associé à l'un des likes est le même que l'utilisateur connecté
+            if ( $like->getUser() == $user ) 
+            {
+                // c'est qu'il a déjà aimé cet article
+                return true;
+            }
+        }
+        
+        // Dans le cas contraire, c'est qu'il n'a pas encore aimé cet article
+        return false;
+    }
 }

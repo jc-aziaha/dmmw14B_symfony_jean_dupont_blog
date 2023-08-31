@@ -6,10 +6,12 @@ use App\Entity\Tag;
 use App\Entity\Post;
 use App\Entity\Comment;
 use App\Entity\Category;
+use App\Entity\PostLike;
 use App\Form\CommentFormType;
 use App\Repository\TagRepository;
 use App\Repository\PostRepository;
 use App\Repository\CategoryRepository;
+use App\Repository\PostLikeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -136,45 +138,59 @@ class BlogController extends AbstractController
         }
 
 
-        // #[Route('/blog/post/{id<\d+>}/{slug}/like', name: 'visitor.blog.post.like', methods: ['GET'])]
-        // public function like(
-        //     Post $post, 
-        //     PostLikeRepository $postLikeRepository,
-        //     EntityManagerInterface $em
-        // ) : Response
-        // {
-        //     $user = $this->getUser();
-    
-        //     if (!$user) 
-        //     {
-        //         return $this->json(array('code' => 403, 'message' => 'Unautorized'), 403);
-        //     }
-    
-        //     if ( $post->isLikedByUser($user) ) 
-        //     {
-        //         $post_liked = $postLikeRepository->findOneBy(array('post' => $post, 'user' => $user));
-    
-        //         $em->remove($post_liked);
-        //         $em->flush();
-                
-        //         return $this->json(array(
-        //             'code' => 200, 
-        //             'message' => 'Like supprimé',
-        //             'postLikes' => $postLikeRepository->count(array('post' => $post))
-        //         ), 200);
-        //     }
-    
-        //     $postLike = new PostLike();
-        //     $postLike->setPost($post);
-        //     $postLike->setUser($user);
-    
-        //     $em->persist($postLike);
-        //     $em->flush();
-    
-        //     return $this->json(array(
-        //         'code' => 200, 
-        //         'message' => 'Like bien ajouté',
-        //         'postLikes' => $postLikeRepository->count(array('post' => $post))
-        //     ), 200);
-        // }
+        #[Route('/blog/post/{id}/{slug}/like', name: 'visitor.blog.post.like', methods:['GET'])]
+        public function like(
+            Post $post, 
+            PostLikeRepository $postLikeRepository,
+            EntityManagerInterface $em
+            ) : Response
+        {
+            // Récupérons l'utilisateur censé être connecté.
+            $user = $this->getUser();
+
+            // S'il n'est pas connecté,
+            if (!$user) 
+            {
+                // Retournons la réponse au navigateur du client, lui expliquant que l'utilisateur n'est pas connecté.
+                return $this->json(['message' => "Vous devez être connecté avant d'aimer cet article."], 403);
+            }
+
+            // Dans le cas contraire,
+
+            // Vérifions, si l'article a déjà été aimé par l'utilisateur connecté,
+            if ( $post->isLikedBy($user) ) 
+            {
+                // Récupérons ce like,
+                $like = $postLikeRepository->findOneBy(['post'=>$post, 'user' =>$user]);
+
+                // Demandons au gestionnaire des entités de supprimer le like.
+                $em->remove($like);
+                $em->flush();
+
+                // Retournons la réponse correspondante au navigateur du client pour qu'il mette à jour les données.
+                return $this->json([
+                    'message' => "Le like a été retiré.",
+                    'totalLikes' => $postLikeRepository->count(['post' => $post])
+                ]);
+            }
+            
+            // Dans le cas contraire,
+            
+            // Créons le nouveau like
+            $postLike = new PostLike();
+            $postLike->setUser($user);
+            $postLike->setPost($post);
+
+            // Demandons au gestionnaire des entités de réaliser la requête la requête d'insertion en base.
+            $em->persist($postLike);
+            $em->flush();
+
+            // Retournons la réponse correspondante au navigateur du client pour qu'il mette à jour les données.
+            return $this->json([
+                'message' => "Le like a été ajouté.",
+                'totalLikes' => $postLikeRepository->count(['post' => $post])
+            ]);
+
+        }
+
     }
